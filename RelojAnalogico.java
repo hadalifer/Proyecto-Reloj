@@ -71,12 +71,12 @@ public class RelojAnalogico extends JPanel {
         Timer timer = new Timer(true);
         
         timer.scheduleAtFixedRate(new TimerTask() {
-            private int lastHour = LocalTime.now().getHour(); // Guardamos la última hora registrada
+            private int lastHour = LocalTime.now().getMinute(); // Guardamos la última hora registrada
     
             @Override
             public void run() {
                 LocalTime now = LocalTime.now();
-                int currentHour = now.getHour();
+                int currentHour = now.getMinute();
                 
                 playTickSound(); // Sonido del segundero
                 repaint(); // Redibujar el reloj
@@ -201,7 +201,7 @@ public class RelojAnalogico extends JPanel {
     
     private void playHourSound() {
         try {
-            File soundFile = new File("hora.wav"); // Ruta del archivo de sonido
+            File soundFile = new File("horas.wav"); // Ruta del archivo de sonido
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
             Clip clip = AudioSystem.getClip();
             clip.open(audioStream);
