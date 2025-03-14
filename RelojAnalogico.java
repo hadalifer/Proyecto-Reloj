@@ -5,6 +5,10 @@ import java.time.LocalTime;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
+
 
 public class RelojAnalogico extends JPanel {
     private BufferedImage buffer; // Doble búfer
@@ -61,17 +65,31 @@ public class RelojAnalogico extends JPanel {
         // Actualiza el reloj cada segundo usando un hilo
         Executors.newSingleThreadScheduledExecutor().execute(this::startClock);
     }
-   
+
 
     private void startClock() {
         Timer timer = new Timer(true);
+        
         timer.scheduleAtFixedRate(new TimerTask() {
+            private int lastHour = LocalTime.now().getHour(); // Guardamos la última hora registrada
+    
             @Override
             public void run() {
-                repaint();
+                LocalTime now = LocalTime.now();
+                int currentHour = now.getHour();
+                
+                playTickSound(); // Sonido del segundero
+                repaint(); // Redibujar el reloj
+    
+                // Si la hora cambia, reproducimos el sonido de la hora
+                if (currentHour != lastHour) {
+                    playHourSound();
+                    lastHour = currentHour; // Actualizamos la hora registrada
+                }
             }
         }, 0, 1000);
     }
+    
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -169,7 +187,29 @@ public class RelojAnalogico extends JPanel {
         g2.rotate(Math.toRadians(-angle), centerX, centerY);
         g2.translate(-x, -y);
     }
+    private void playTickSound() {
+        try {
+            File soundFile = new File("tick.wav"); // Ruta del archivo de sonido
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
     
+    private void playHourSound() {
+        try {
+            File soundFile = new File("hora.wav"); // Ruta del archivo de sonido
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
     
 
     public static void main(String[] args) {
